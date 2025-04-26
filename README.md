@@ -6,7 +6,7 @@ hello baby
 hi abhinav
 
 
-**add this in the login page**
+**add this in the login page** <br>
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QStackedWidget
 from PyQt5.QtCore import Qt
