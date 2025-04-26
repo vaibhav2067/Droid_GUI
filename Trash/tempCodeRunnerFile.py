@@ -1,0 +1,1 @@
+ct(self.open_camera_screen)
