@@ -18,76 +18,32 @@ class VirtualKeyboard(QWidget):
 
     def initUI(self):
         layout = QVBoxLayout()
-        hbox = QHBoxLayout()  # Horizontal box to center the grid
+        hbox = QHBoxLayout()
         hbox.setAlignment(Qt.AlignCenter)
 
         self.grid = QGridLayout()
-        hbox.addLayout(self.grid)  # Place grid in the center
+        hbox.addLayout(self.grid)
         layout.addLayout(hbox)
 
-
+        # Corrected keys layout you gave
         self.keys = [
-            ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+'],
-            ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+            ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_'],
+            ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Backspace'],
             ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']'],
             ['Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 'Enter'],
             ['Done', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '\\'],
             ['Space']
         ]
 
-        icon_map = {
-            'Backspace': QIcon("icons/camera_icon_white.png"),
-            'Enter': QIcon("icons/camera_icon_white.png"),
-            'Caps': QIcon("icons/camera_icon_white.png"),
-            'Space': QIcon("icons/camera_icon_white.png"),
-            'Done': QIcon("icons/camera_icon_white.png")
-        }
-
         row = 0
         for key_row in self.keys:
             col = 0
             for key in key_row:
-                button = QPushButton()
+                button = QPushButton(key)
                 button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-                if key in icon_map:
-                    button.setIcon(icon_map[key])
-                    button.setIconSize(button.sizeHint())
-                else:
-                    button.setText(key.upper() if len(key) == 1 else key)
-
-                # Special styling for function keys
-                if key in ['Backspace', 'Enter', 'Caps', 'Done', 'Space']:
-                    button.setStyleSheet("""
-                        QPushButton {
-                            background-color: #34495e;
-                            color: white;
-                            border-radius: 10px;
-                            font-size: 16px;
-                            padding: 10px;
-                            margin: 4px;
-                        }
-                        QPushButton:pressed {
-                            background-color: #1abc9c;
-                        }
-                    """)
-                else:
-                    button.setStyleSheet("""
-                        QPushButton {
-                            background-color: #2c3e50;
-                            color: white;
-                            border-radius: 10px;
-                            font-size: 16px;
-                            padding: 8px;
-                            margin: 4px;
-                        }
-                        QPushButton:pressed {
-                            background-color: #16a085;
-                        }
-                    """)
-
                 button.clicked.connect(lambda _, k=key: self.key_pressed(k))
 
+                # Special sizing for special keys
                 if key == 'Space':
                     self.grid.addWidget(button, row, col, 1, 6)
                     col += 6
@@ -100,6 +56,7 @@ class VirtualKeyboard(QWidget):
             row += 1
 
         self.setLayout(layout)
+        self.apply_styles()
 
     def key_pressed(self, key):
         if not self.input_target:
@@ -116,13 +73,37 @@ class VirtualKeyboard(QWidget):
             self.input_target.setText(current_text + ' ')
         elif key == 'Caps':
             self.caps_lock = not self.caps_lock
+            self.update_caps_lock()
         elif key == 'Done':
             self.hide()
         else:
-            char = key.upper() if self.caps_lock and len(key) == 1 else key
+            char = key.upper() if self.caps_lock else key.lower()
             self.input_target.setText(current_text + char)
 
         self.input_target.setCursorPosition(len(self.input_target.text()))
+
+    def update_caps_lock(self):
+        for i in range(self.grid.count()):
+            item = self.grid.itemAt(i).widget()
+            if isinstance(item, QPushButton):
+                text = item.text()
+                if len(text) == 1 and text.isalpha():
+                    item.setText(text.upper() if self.caps_lock else text.lower())
+
+    def apply_styles(self):
+        self.setStyleSheet("""
+            QPushButton {
+                background-color: #2c3e50;
+                color: white;
+                border-radius: 10px;
+                font-size: 18px;
+                padding: 10px;
+                margin: 4px;
+            }
+            QPushButton:pressed {
+                background-color: #16a085;
+            }
+        """)
 
 
 # ===== BACKGROUND WIDGET =====
