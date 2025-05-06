@@ -27,7 +27,7 @@ class FullscreenWindow(QMainWindow):
         super().__init__()
         self.showFullScreen()
 
-        self.background_widget = BackgroundWidget("coolbackgrounds-topography-micron.jpg")
+        self.background_widget = BackgroundWidget("Images/background.jpg")
         self.setCentralWidget(self.background_widget)
 
         main_layout = QVBoxLayout()
